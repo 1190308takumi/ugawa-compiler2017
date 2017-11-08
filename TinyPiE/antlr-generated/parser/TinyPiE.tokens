@@ -1,0 +1,9 @@
+T__0=1
+T__1=2
+ADDOP=3
+MULOP=4
+IDENTIFIER=5
+VALUE=6
+WS=7
+'('=1
+')'=2
