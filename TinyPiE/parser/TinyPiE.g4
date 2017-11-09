@@ -1,9 +1,17 @@
 // antlr4 -package parser -o antlr-generated  -no-listener parser/TinyPiE.g4
 grammar TinyPiE;
 
-expr: addExpr
+expr: orExpr
       ;
-
+     
+orExpr: orExpr OROP andExpr
+	| andExpr
+	;
+      
+andExpr: andExpr ANDOP addExpr
+	| addExpr
+	;
+	
 addExpr: addExpr ADDOP mulExpr
 	| mulExpr
 	;
@@ -17,8 +25,13 @@ unaryExpr: VALUE			# literalExpr
 	| '(' expr ')'			# parenExpr
 	;
 
+
+
 ADDOP: '+'|'-';
 MULOP: '*'|'/';
+ANDOP: '&';
+OROP: '|';
+
 
 IDENTIFIER: 'x'|'y'|'z';
 VALUE: '0'|[1-9][0-9]*;
