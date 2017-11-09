@@ -17,8 +17,8 @@ public class TinyPiEParser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		T__0=1, T__1=2, ADDOP=3, MULOP=4, ANDOP=5, OROP=6, IDENTIFIER=7, VALUE=8, 
-		WS=9;
+		T__0=1, T__1=2, ADDOP=3, MULOP=4, ANDOP=5, OROP=6, UOOP=7, IDENTIFIER=8, 
+		VALUE=9, WS=10;
 	public static final int
 		RULE_expr = 0, RULE_orExpr = 1, RULE_andExpr = 2, RULE_addExpr = 3, RULE_mulExpr = 4, 
 		RULE_unaryExpr = 5;
@@ -27,11 +27,11 @@ public class TinyPiEParser extends Parser {
 	};
 
 	private static final String[] _LITERAL_NAMES = {
-		null, "'('", "')'", null, null, "'&'", "'|'"
+		null, "'('", "')'", "'+'", null, "'&'", "'|'"
 	};
 	private static final String[] _SYMBOLIC_NAMES = {
-		null, null, null, "ADDOP", "MULOP", "ANDOP", "OROP", "IDENTIFIER", "VALUE", 
-		"WS"
+		null, null, null, "ADDOP", "MULOP", "ANDOP", "OROP", "UOOP", "IDENTIFIER", 
+		"VALUE", "WS"
 	};
 	public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
 
@@ -408,6 +408,13 @@ public class TinyPiEParser extends Parser {
 			super.copyFrom(ctx);
 		}
 	}
+	public static class UotExprContext extends UnaryExprContext {
+		public TerminalNode UOOP() { return getToken(TinyPiEParser.UOOP, 0); }
+		public UnaryExprContext unaryExpr() {
+			return getRuleContext(UnaryExprContext.class,0);
+		}
+		public UotExprContext(UnaryExprContext ctx) { copyFrom(ctx); }
+	}
 	public static class VarExprContext extends UnaryExprContext {
 		public TerminalNode IDENTIFIER() { return getToken(TinyPiEParser.IDENTIFIER, 0); }
 		public VarExprContext(UnaryExprContext ctx) { copyFrom(ctx); }
@@ -427,7 +434,7 @@ public class TinyPiEParser extends Parser {
 		UnaryExprContext _localctx = new UnaryExprContext(_ctx, getState());
 		enterRule(_localctx, 10, RULE_unaryExpr);
 		try {
-			setState(64);
+			setState(66);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case VALUE:
@@ -456,6 +463,16 @@ public class TinyPiEParser extends Parser {
 				expr();
 				setState(62);
 				match(T__1);
+				}
+				break;
+			case UOOP:
+				_localctx = new UotExprContext(_localctx);
+				enterOuterAlt(_localctx, 4);
+				{
+				setState(64);
+				match(UOOP);
+				setState(65);
+				unaryExpr();
 				}
 				break;
 			default:
@@ -516,23 +533,24 @@ public class TinyPiEParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\13E\4\2\t\2\4\3\t"+
+		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\fG\4\2\t\2\4\3\t"+
 		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\3\2\3\2\3\3\3\3\3\3\3\3\3\3\3\3\7\3"+
 		"\27\n\3\f\3\16\3\32\13\3\3\4\3\4\3\4\3\4\3\4\3\4\7\4\"\n\4\f\4\16\4%\13"+
 		"\4\3\5\3\5\3\5\3\5\3\5\3\5\7\5-\n\5\f\5\16\5\60\13\5\3\6\3\6\3\6\3\6\3"+
-		"\6\3\6\7\68\n\6\f\6\16\6;\13\6\3\7\3\7\3\7\3\7\3\7\3\7\5\7C\n\7\3\7\2"+
-		"\6\4\6\b\n\b\2\4\6\b\n\f\2\2D\2\16\3\2\2\2\4\20\3\2\2\2\6\33\3\2\2\2\b"+
-		"&\3\2\2\2\n\61\3\2\2\2\fB\3\2\2\2\16\17\5\4\3\2\17\3\3\2\2\2\20\21\b\3"+
-		"\1\2\21\22\5\6\4\2\22\30\3\2\2\2\23\24\f\4\2\2\24\25\7\b\2\2\25\27\5\6"+
-		"\4\2\26\23\3\2\2\2\27\32\3\2\2\2\30\26\3\2\2\2\30\31\3\2\2\2\31\5\3\2"+
-		"\2\2\32\30\3\2\2\2\33\34\b\4\1\2\34\35\5\b\5\2\35#\3\2\2\2\36\37\f\4\2"+
-		"\2\37 \7\7\2\2 \"\5\b\5\2!\36\3\2\2\2\"%\3\2\2\2#!\3\2\2\2#$\3\2\2\2$"+
-		"\7\3\2\2\2%#\3\2\2\2&\'\b\5\1\2\'(\5\n\6\2(.\3\2\2\2)*\f\4\2\2*+\7\5\2"+
-		"\2+-\5\n\6\2,)\3\2\2\2-\60\3\2\2\2.,\3\2\2\2./\3\2\2\2/\t\3\2\2\2\60."+
-		"\3\2\2\2\61\62\b\6\1\2\62\63\5\f\7\2\639\3\2\2\2\64\65\f\4\2\2\65\66\7"+
-		"\6\2\2\668\5\f\7\2\67\64\3\2\2\28;\3\2\2\29\67\3\2\2\29:\3\2\2\2:\13\3"+
-		"\2\2\2;9\3\2\2\2<C\7\n\2\2=C\7\t\2\2>?\7\3\2\2?@\5\2\2\2@A\7\4\2\2AC\3"+
-		"\2\2\2B<\3\2\2\2B=\3\2\2\2B>\3\2\2\2C\r\3\2\2\2\7\30#.9B";
+		"\6\3\6\7\68\n\6\f\6\16\6;\13\6\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\5\7E\n"+
+		"\7\3\7\2\6\4\6\b\n\b\2\4\6\b\n\f\2\2G\2\16\3\2\2\2\4\20\3\2\2\2\6\33\3"+
+		"\2\2\2\b&\3\2\2\2\n\61\3\2\2\2\fD\3\2\2\2\16\17\5\4\3\2\17\3\3\2\2\2\20"+
+		"\21\b\3\1\2\21\22\5\6\4\2\22\30\3\2\2\2\23\24\f\4\2\2\24\25\7\b\2\2\25"+
+		"\27\5\6\4\2\26\23\3\2\2\2\27\32\3\2\2\2\30\26\3\2\2\2\30\31\3\2\2\2\31"+
+		"\5\3\2\2\2\32\30\3\2\2\2\33\34\b\4\1\2\34\35\5\b\5\2\35#\3\2\2\2\36\37"+
+		"\f\4\2\2\37 \7\7\2\2 \"\5\b\5\2!\36\3\2\2\2\"%\3\2\2\2#!\3\2\2\2#$\3\2"+
+		"\2\2$\7\3\2\2\2%#\3\2\2\2&\'\b\5\1\2\'(\5\n\6\2(.\3\2\2\2)*\f\4\2\2*+"+
+		"\7\5\2\2+-\5\n\6\2,)\3\2\2\2-\60\3\2\2\2.,\3\2\2\2./\3\2\2\2/\t\3\2\2"+
+		"\2\60.\3\2\2\2\61\62\b\6\1\2\62\63\5\f\7\2\639\3\2\2\2\64\65\f\4\2\2\65"+
+		"\66\7\6\2\2\668\5\f\7\2\67\64\3\2\2\28;\3\2\2\29\67\3\2\2\29:\3\2\2\2"+
+		":\13\3\2\2\2;9\3\2\2\2<E\7\13\2\2=E\7\n\2\2>?\7\3\2\2?@\5\2\2\2@A\7\4"+
+		"\2\2AE\3\2\2\2BC\7\t\2\2CE\5\f\7\2D<\3\2\2\2D=\3\2\2\2D>\3\2\2\2DB\3\2"+
+		"\2\2E\r\3\2\2\2\7\30#.9D";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

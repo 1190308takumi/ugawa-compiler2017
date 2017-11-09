@@ -22,15 +22,17 @@ mulExpr: mulExpr MULOP unaryExpr
 
 unaryExpr: VALUE			# literalExpr
 	| IDENTIFIER			# varExpr
-	| '(' expr ')'			# parenExpr
+	| '(' expr ')'		# parenExpr
+	| UOOP unaryExpr		# UotExpr
 	;
 
 
 
-ADDOP: '+'|'-';
+ADDOP: '+';
 MULOP: '*'|'/';
 ANDOP: '&';
 OROP: '|';
+UOOP: '~'|'-';
 
 
 IDENTIFIER: 'x'|'y'|'z';
