@@ -6,7 +6,6 @@ import parser.TinyPiEParser.LiteralExprContext;
 import parser.TinyPiEParser.MulExprContext;
 import parser.TinyPiEParser.ParenExprContext;
 import parser.TinyPiEParser.VarExprContext;
-
 import parser.TinyPiEParser.AndExprContext;
 import parser.TinyPiEParser.OrExprContext;
 
@@ -57,6 +56,7 @@ public class ASTGenerator {
 		}
 		throw new Error("Unknown parse tree node: "+ctxx.getText());		
 	}
+	
 	ASTNode translate(ParseTree ctxx) {
 		return translateExpr(ctxx);
 	}
