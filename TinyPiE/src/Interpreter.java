@@ -25,16 +25,16 @@ public class Interpreter extends InterpreterBase {
 				return lhsValue | rhsValue;
 			else
 				throw new Error("Unknwon operator: "+nd.op);
-		}else if (ndx instanceof ASTNumberNode){
+		} else if (ndx instanceof ASTNumberNode){
 			ASTNumberNode nd = (ASTNumberNode) ndx;
 			return nd.value;
-		}else if (ndx instanceof ASTVarRefNode) {
+		} else if (ndx instanceof ASTVarRefNode) {
 			ASTVarRefNode nd = (ASTVarRefNode) ndx;
 			Variable var = env.lookup(nd.varName);
 			if (var == null)
 				throw new Error("Undefined variable: "+nd.varName);
 			return var.get();
-		}else if (ndx instanceof ASTUnaryExprNode){
+		} else if (ndx instanceof ASTUnaryExprNode){
 			ASTUnaryExprNode nd = (ASTUnaryExprNode) ndx;
 			int rhsValue = evalExpr(nd.rhs, env);
 			if (nd.op.equals("-")){

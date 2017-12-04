@@ -49,7 +49,58 @@ public class Compiler extends CompilerBase {
 			compileStmt(nd.stmt, env);
 			emitJMP("b", startLabel);
 			emitLabel(endLabel);
-		} else
+		} else if (ndx instanceof ASTPrintStmtNode){
+			ASTPrintStmtNode  nd = (ASTPrintStmtNode) ndx;
+			String loop1Label = freshLabel();
+			String jmp1Label = freshLabel();
+			String jmp2Label = freshLabel();
+			String jmp3Label = freshLabel();
+			
+			emitPUSH(REG_R1);
+			emitPUSH(REG_R2);
+			emitPUSH(REG_R3);
+			emitPUSH(REG_R4);
+			emitPUSH(REG_R6);
+			emitPUSH(REG_R7);
+			
+			compileExpr(nd.expr, env);
+			emitRR("mov", REG_R1, REG_DST);
+			emitRI("mov", REG_R2, 8);
+			emitRI("mov",REG_R3,16);
+			emitRR("ldr",REG_R4,"=buf+8");
+			emitLabel(loop1Label);
+			emitRRR("udiv",REG_R6,REG_R1,REG_R3);
+			emitRRR("mul",REG_R7,REG_R6,REG_R3);
+			emitRRR("sub",REG_R7,REG_R1,REG_R7);
+			emitRI("cmp",REG_R7,10);
+			emitJMP("bcs",jmp1Label);
+			emitRI("add",REG_R7,'0');
+			emitLabel(jmp2Label);
+			emitSTRB(REG_R7,REG_R4,-1);
+			emitRR("mov",REG_R1,REG_R6);
+			emitRI("subs",REG_R2,1);
+			emitJMP("bne",loop1Label);
+			emitJMP("b",jmp3Label);
+			emitLabel(jmp1Label);
+			emitRI("add",REG_R7,'a');
+			emitRI("sub",REG_R7,10);
+			emitJMP("b",jmp2Label);
+			emitLabel(jmp3Label);
+			
+			emitRI("mov",REG_R7,4);
+			emitRI("mov",REG_DST,1);
+			emitRR("ldr",REG_R1,"=buf");
+			emitRI("mov",REG_R2,9);
+			emitI("swi",0);
+			
+			emitPOP(REG_R1);
+			emitPOP(REG_R2);
+			emitPOP(REG_R3);
+			emitPOP(REG_R4);
+			emitPOP(REG_R6);
+			emitPOP(REG_R7);
+		}
+		else
 			throw new Error("Unknown expression: "+ndx);
 	}
 
@@ -68,6 +119,10 @@ public class Compiler extends CompilerBase {
 				emitRRR("mul", REG_DST, REG_R1, REG_DST);
 			else if (nd.op.equals("/"))
 				emitRRR("udiv", REG_DST, REG_R1, REG_DST);
+			else if (nd.op.equals("&"))
+				emitRRR("and", REG_DST, REG_R1, REG_DST);
+			else if (nd.op.equals("|"))
+				emitRRR("orr", REG_DST,REG_R1,REG_DST);
 			else
 				throw new Error("Unknwon operator: "+nd.op);
 			emitPOP(REG_R1);
@@ -85,7 +140,16 @@ public class Compiler extends CompilerBase {
 				emitLDR(REG_DST, REG_DST, 0);
 			} else
 				throw new Error("Not a global variable: "+nd.varName);
-		} else 
+		} else if (ndx instanceof ASTUnaryExprNode) {
+			ASTUnaryExprNode nd = (ASTUnaryExprNode) ndx;
+			compileExpr(nd.rhs, env);
+			if (nd.op.equals("-")){
+				emitRR("mvn",REG_DST,REG_DST);
+				emitRRI("add",REG_DST,REG_DST,1);
+			} else if (nd.op.equals("~")) {
+				emitRR("mvn",REG_DST,REG_DST);
+			}
+		} else
 			throw new Error("Unknown expression: "+ndx);
 	}
 	
@@ -116,6 +180,11 @@ public class Compiler extends CompilerBase {
 		emitLDR("r0", REG_DST, 0);
 		emitRI("mov", "r7", 1);   // EXIT のシステムコール番号
 		emitI("swi", 0);
+		
+		System.out.println(".section .data");
+		emitLabel("buf");
+		System.out.println("\t .space 8,0");
+		System.out.println(".byte 0x0a");
 	}
 
 	public static void main(String[] args) throws IOException {

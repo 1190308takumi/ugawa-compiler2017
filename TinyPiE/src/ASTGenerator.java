@@ -1,14 +1,15 @@
  import org.antlr.v4.runtime.tree.ParseTree;
 
 import parser.TinyPiEParser.AddExprContext;
+import parser.TinyPiEParser.AndExprContext;
 import parser.TinyPiEParser.ExprContext;
 import parser.TinyPiEParser.LiteralExprContext;
 import parser.TinyPiEParser.MulExprContext;
-import parser.TinyPiEParser.ParenExprContext;
-import parser.TinyPiEParser.VarExprContext;
-import parser.TinyPiEParser.AndExprContext;
 import parser.TinyPiEParser.OrExprContext;
+import parser.TinyPiEParser.ParenExprContext;
+import parser.TinyPiEParser.SuExprContext;
 import parser.TinyPiEParser.UotExprContext;
+import parser.TinyPiEParser.VarExprContext;
 
 public class ASTGenerator {	
 	ASTNode translateExpr(ParseTree ctxx) {
@@ -21,6 +22,9 @@ public class ASTGenerator {
 				return translateExpr(ctx.mulExpr());
 			ASTNode lhs = translateExpr(ctx.addExpr());
 			ASTNode rhs = translateExpr(ctx.mulExpr());
+			if (ctx.ADDOP() == null){
+				return new ASTBinaryExprNode(ctx.SUBOP().getText(), lhs, rhs);
+			} 
 			return new ASTBinaryExprNode(ctx.ADDOP().getText(), lhs, rhs);
 		} else if (ctxx instanceof MulExprContext) {
 			MulExprContext ctx = (MulExprContext) ctxx;
@@ -58,6 +62,10 @@ public class ASTGenerator {
 			UotExprContext ctx = (UotExprContext) ctxx;
 			ASTNode rhs = translateExpr(ctx.unaryExpr());
 			return new ASTUnaryExprNode(ctx.UOOP().getText(),rhs);
+		}else if (ctxx instanceof SuExprContext) {
+			SuExprContext ctx = (SuExprContext) ctxx;
+			ASTNode rhs = translateExpr(ctx.unaryExpr());
+			return new ASTUnaryExprNode(ctx.SUBOP().getText(),rhs);
 		}
 		throw new Error("Unknown parse tree node: "+ctxx.getText());		
 	}

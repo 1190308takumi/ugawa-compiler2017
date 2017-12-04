@@ -10,21 +10,23 @@ import parser.TinyPiSParser;
 
 public class Interpreter extends InterpreterBase {
 	int evalExpr(ASTNode ndx, Environment env) {
-		if (ndx instanceof ASTBinaryExprNode) {
+		if (ndx instanceof ASTBinaryExprNode){
 			ASTBinaryExprNode nd = (ASTBinaryExprNode) ndx;
 			int lhsValue = evalExpr(nd.lhs, env);
 			int rhsValue = evalExpr(nd.rhs, env);
 			if (nd.op.equals("+"))
 				return lhsValue + rhsValue;
-			else if (nd.op.equals("-"))
-				return lhsValue - rhsValue;
 			else if (nd.op.equals("*"))
 				return lhsValue * rhsValue;
 			else if (nd.op.equals("/"))
 				return lhsValue / rhsValue;
+			else if (nd.op.equals("&"))
+				return lhsValue & rhsValue;
+			else if (nd.op.equals("|"))
+				return lhsValue | rhsValue;
 			else
 				throw new Error("Unknwon operator: "+nd.op);
-		} else if (ndx instanceof ASTNumberNode) {
+		} else if (ndx instanceof ASTNumberNode){
 			ASTNumberNode nd = (ASTNumberNode) ndx;
 			return nd.value;
 		} else if (ndx instanceof ASTVarRefNode) {
@@ -33,10 +35,21 @@ public class Interpreter extends InterpreterBase {
 			if (var == null)
 				throw new Error("Undefined variable: "+nd.varName);
 			return var.get();
-		} else {
-			throw new Error("Unknown expression: "+ndx);
+		} else if (ndx instanceof ASTUnaryExprNode){
+			ASTUnaryExprNode nd = (ASTUnaryExprNode) ndx;
+			int rhsValue = evalExpr(nd.rhs, env);
+			if (nd.op.equals("-")){
+				return - rhsValue;
+			}else if (nd.op.equals("~")){
+				return ~ rhsValue;
+			}else{
+				throw new Error("Unknwon operator: "+nd.op);
+			}
 		}
+		else
+			throw new Error("Unknown expression: "+ndx);
 	}
+	
 	
 	void evalStmt(ASTNode ndx, Environment env){
 		if (ndx instanceof ASTCompoundStmtNode){
@@ -61,7 +74,11 @@ public class Interpreter extends InterpreterBase {
 			ASTWhileStmtNode nd = (ASTWhileStmtNode) ndx;
 			while (evalExpr(nd.cond, env) != 0)
 				evalStmt(nd.stmt, env);
-		} else  {
+		} else if (ndx instanceof ASTPrintStmtNode) {
+			ASTPrintStmtNode nd = (ASTPrintStmtNode) ndx;
+			int expr = evalExpr(nd.expr, env);
+			System.out.println(String.format("%08X",expr));
+		} else {
 			throw new Error("Unknown expression: "+ndx);
 		}
 	}

@@ -11,12 +11,22 @@ stmt: '{' stmt* '}'				#compoundStmt
     | IDENTIFIER '=' expr ';'			#assignStmt
     | 'if' '(' expr ')' stmt 'else' stmt	#ifStmt
     | 'while' '(' expr ')' stmt			#whileStmt
+    | 'print' expr ';'			#printStmt
     ;
 
-expr: addExpr
+expr: orExpr
       ;
-
+      
+orExpr: orExpr OROP andExpr
+	| andExpr
+	;
+      
+andExpr: andExpr ANDOP addExpr
+	| addExpr
+	;
+	
 addExpr: addExpr ADDOP mulExpr
+	| addExpr SUBOP mulExpr
 	| mulExpr
 	;
 
@@ -26,12 +36,20 @@ mulExpr: mulExpr MULOP unaryExpr
 
 unaryExpr: VALUE			# literalExpr
 	| IDENTIFIER			# varExpr
-	| '(' expr ')'			# parenExpr
+	| '(' expr ')'		# parenExpr
+	| UOOP unaryExpr		# uotExpr
+	| SUBOP unaryExpr		# suExpr
 	;
 
-ADDOP: '+'|'-';
-MULOP: '*'|'/';
 
-IDENTIFIER: 'x'|'y'|'z'|'answer';
-VALUE: [0-9]+;
+
+ADDOP: '+';
+SUBOP: '-';
+MULOP: '*'|'/';
+ANDOP: '&';
+OROP: '|';
+UOOP: '~';
+
+IDENTIFIER: [a-zA-Z_][0-9a-zA-Z_]*;
+VALUE: [1-9][0-9]*|'0';
 WS: [ \t\r\n] -> skip;
