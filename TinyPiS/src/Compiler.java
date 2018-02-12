@@ -4,6 +4,7 @@ import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 
+import CompilerBase.GlobalVariable;
 import parser.TinyPiSLexer;
 import parser.TinyPiSParser;
 
@@ -32,7 +33,7 @@ public class Compiler extends CompilerBase {
 			String endLabel = freshLabel();
 			compileExpr(nd.cond, env);
 			emitRI("cmp", REG_DST, 0);
-			emitJMP("deq", elseLabel);
+			emitJMP("beq", elseLabel);
 			compileStmt(nd.thenClause, env);
 			emitJMP("b", endLabel);
 			emitLabel(elseLabel);
@@ -45,7 +46,7 @@ public class Compiler extends CompilerBase {
 			emitLabel(startLabel);
 			compileExpr(nd.cond, env);
 			emitRI("cmp", REG_DST, 0);
-			emitJMP("deq", endLabel);
+			emitJMP("beq", endLabel);
 			compileStmt(nd.stmt, env);
 			emitJMP("b", startLabel);
 			emitLabel(endLabel);
@@ -177,6 +178,8 @@ public class Compiler extends CompilerBase {
 		System.out.println("\t@ 式をコンパイルした命令列");
 		compileStmt(prog.stmt, env);
 		System.out.println("\t@ EXITシステムコール");
+		GlobalVariable v = (GlobalVariable) env.lookup("answer");
+		emitLDC(REG_DST, v.getLabel());
 		emitLDR("r0", REG_DST, 0);
 		emitRI("mov", "r7", 1);   // EXIT のシステムコール番号
 		emitI("swi", 0);
